@@ -51,7 +51,7 @@ class App {
         this.epicGames = new EpicGames();
         this.utils = new Utils();
         this.client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
-        this.webHook = new WebhookClient({ url: "https://discord.com/api/webhooks/1103392723798593678/wglVSf-9ISJdZR8r44DUwHalPJ5gJgLkMHrQp6EYFhB8PqQi-KFnSZxFnG1DnYPqaJDx" });
+        this.webHook = new WebhookClient({ id: process.env.WEBHOOK_ID, token: process.env.WEBHOOK_TOKEN });
     }
 
     async start() {
