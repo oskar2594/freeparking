@@ -1,3 +1,5 @@
+
+import fetch from 'node-fetch';
 import cron from 'node-cron';
 import dotenv from 'dotenv';
 import nedb from 'nedb';
