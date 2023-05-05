@@ -68,7 +68,11 @@ class App {
         console.log('Found new free games: ' + newGames.length);
         if (newGames.length === 0) return;
         newGames.forEach(game => {
-            this.webHook.send(this.createDiscordMessage(game));
+            this.webHook.send(this.createDiscordMessage(game)).then(() => {
+                console.log(`Sent message for ${game.title}`);
+            }).catch(err => {
+                console.error(err);
+            });
         });
     }
 
