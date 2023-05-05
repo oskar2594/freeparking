@@ -15,6 +15,8 @@ class Utils {
     }
 }
 
+
+
 class EpicGames {
     generateUrl(namespace, id) {
         return `https://store.epicgames.com/purchase?highlightColor=64cc88&offers=1-${namespace}-${id}&orderId&purchaseToken&showNavigation=true#/purchase/payment-methods`
@@ -53,6 +55,7 @@ class App {
     }
 
     async start() {
+        console.log('Starting...');
         this.sendNewGames();
         await cron.schedule('0 * * * *', async () => {
             this.sendNewGames();
