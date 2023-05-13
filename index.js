@@ -118,7 +118,7 @@ class DiscordBot {
                 if(notifyRole) message.content = message.content.replace('{role}', `<@&${guild.alertRole}>`);
                 const channel = this.client.guilds.cache.get(guild.guildId).channels.cache.get(guild.alertChannel);
                 this.send(channel, message).then(() => {
-                    console.log(`Sent message to ${channel.name} on ${guild.guildId}`);
+                    console.log(`Sent message to on ${guild.guildId}`);
                 }).catch(err => {
                     console.error(err);
                 });
@@ -131,8 +131,9 @@ class DiscordBot {
         await Database.db.discord.find({}, (err, guilds) => {
             if (err) return console.error(err);
             guilds.forEach(guild => {
-                if (!guild.roleMessage || !guild.roleChannel || !guild.alertRole) return;
+                if (!guild.roleMessage || !guild.roleChannel || !guild.alertRole || !guild.guildId) return;
                 const channel = this.client.guilds.cache.get(guild.guildId).channels.cache.get(guild.roleChannel);
+                if(!channel) return console.error(`Channel ${guild.roleChannel} not found!`);
                 channel.messages.fetch(guild.roleMessage).then(message => {
                     const role = this.client.guilds.cache.get(guild.guildId).roles.cache.get(guild.alertRole);
                     const filter = (interaction) => interaction.customId === 'subscribe' || interaction.customId === 'unsubscribe';
@@ -225,7 +226,7 @@ class App {
                     await Database.db.findOne({ gameId: game.id }, (err, doc) => {
                         if (err) return rej(err);
                         if (doc) return res(false);
-                        // Database.db.insert({ gameId: game.id });
+                        Database.db.insert({ gameId: game.id });
                         res(true);
                     });
                 });
