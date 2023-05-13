@@ -25,7 +25,7 @@ class Utils {
 }
 
 
-class EpicGames {
+export class EpicGames {
     generateUrl(namespace, id) {
         return `https://store.epicgames.com/purchase?highlightColor=64cc88&offers=1-${namespace}-${id}&orderId&purchaseToken&showNavigation=true#/purchase/payment-methods`
     }
@@ -108,20 +108,24 @@ class DiscordBot {
         channel.send(message);
     }
 
+    async sendToGuild(guildId, channelId, message) {
+        const channel = this.client.guilds.cache.get(guildId).channels.cache.get(channelId);
+        this.send(channel, message).then(() => {
+            console.log(`Sent message to on ${guild.guildId}`);
+        }).catch(err => {
+            console.error(err);
+        });
+    };
+
     async sendToAll(message, notifyRole = false) {
         if (!this.ready) return;
         await Database.db.discord.find({}, (err, guilds) => {
             if (err) return console.error(err);
             guilds.forEach(guild => {
                 if (!guild.alertChannel) return;
-                if(notifyRole && !guild.alertRole) return;
-                if(notifyRole) message.content = message.content.replace('{role}', `<@&${guild.alertRole}>`);
-                const channel = this.client.guilds.cache.get(guild.guildId).channels.cache.get(guild.alertChannel);
-                this.send(channel, message).then(() => {
-                    console.log(`Sent message to on ${guild.guildId}`);
-                }).catch(err => {
-                    console.error(err);
-                });
+                if (notifyRole && !guild.alertRole) return;
+                if (notifyRole) message.content = message.content.replace('{role}', `<@&${guild.alertRole}>`);
+                this.sendToGuild(guild.guildId, guild.alertChannel, message);
             });
         });
     }
@@ -133,7 +137,7 @@ class DiscordBot {
             guilds.forEach(guild => {
                 if (!guild.roleMessage || !guild.roleChannel || !guild.alertRole || !guild.guildId) return;
                 const channel = this.client.guilds.cache.get(guild.guildId).channels.cache.get(guild.roleChannel);
-                if(!channel) return console.error(`Channel ${guild.roleChannel} not found!`);
+                if (!channel) return console.error(`Channel ${guild.roleChannel} not found!`);
                 channel.messages.fetch(guild.roleMessage).then(message => {
                     const role = this.client.guilds.cache.get(guild.guildId).roles.cache.get(guild.alertRole);
                     const filter = (interaction) => interaction.customId === 'subscribe' || interaction.customId === 'unsubscribe';
@@ -226,7 +230,7 @@ class App {
                     await Database.db.findOne({ gameId: game.id }, (err, doc) => {
                         if (err) return rej(err);
                         if (doc) return res(false);
-                        Database.db.insert({ gameId: game.id });
+                        Database.db.insert({ gameId: game.id, gameData: game});
                         res(true);
                     });
                 });
@@ -236,5 +240,5 @@ class App {
 }
 
 dotenv.config()
-const app = new App();
+export const app = new App();
 app.start();
