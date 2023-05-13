@@ -1,5 +1,5 @@
 import { PermissionFlagsBits, SlashCommandBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
-import { Database } from "../index.js";
+import { Database, app } from "../index.js";
 
 export default {
     data: new SlashCommandBuilder().setName('createrolemessage').setDescription('Create a role message').setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
@@ -25,6 +25,7 @@ export default {
                 ],
                 components: [row]
             });
+            app.discordbot.setupButtonActions();
             Database.db.discord.update({ guildId: interaction.guild.id }, { $set: { roleMessage: message.id } });
             interaction.reply({ content: 'The role message has been created!', ephemeral: true }).then(msg => {
                 setTimeout(() => msg.delete(), 5000);

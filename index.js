@@ -55,6 +55,8 @@ export class EpicGames {
 
 class DiscordBot {
 
+    collectedMessages = [];
+
     constructor() {
         this.client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildModeration] });
         this.loadCommands();
@@ -139,9 +141,11 @@ class DiscordBot {
                 const channel = this.client.guilds.cache.get(guild.guildId).channels.cache.get(guild.roleChannel);
                 if (!channel) return console.error(`Channel ${guild.roleChannel} not found!`);
                 channel.messages.fetch(guild.roleMessage).then(message => {
+                    if(this.collectedMessages.includes(message.id)) return;
                     const role = this.client.guilds.cache.get(guild.guildId).roles.cache.get(guild.alertRole);
                     const filter = (interaction) => interaction.customId === 'subscribe' || interaction.customId === 'unsubscribe';
                     const collector = message.createMessageComponentCollector({ filter });
+                    this.collectedMessages.push(message.id);
                     collector.on('collect', async interaction => {
                         if (interaction.customId === 'subscribe') {
                             await interaction.member.roles.add(role);
