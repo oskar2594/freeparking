@@ -137,9 +137,10 @@ class DiscordBot {
         await Database.db.discord.find({}, (err, guilds) => {
             if (err) return console.error(err);
             guilds.forEach(guild => {
-                if (!guild.roleMessage || !guild.roleChannel || !guild.alertRole || !guild.guildId) return;
+                if (!guild.roleMessage || !guild.roleChannel || !guild.alertRole || !guild.guildId) return console.log(`Guild ${guild.guildId} is missing data!`);
                 const channel = this.client.guilds.cache.get(guild.guildId).channels.cache.get(guild.roleChannel);
                 if (!channel) return console.error(`Channel ${guild.roleChannel} not found!`);
+                console.log(`Setting up button actions for ${guild.guildId}`);
                 channel.messages.fetch(guild.roleMessage).then(message => {
                     if(this.collectedMessages.includes(message.id)) return;
                     const role = this.client.guilds.cache.get(guild.guildId).roles.cache.get(guild.alertRole);
