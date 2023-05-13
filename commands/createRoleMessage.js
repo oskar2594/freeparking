@@ -25,10 +25,12 @@ export default {
                 ],
                 components: [row]
             });
-            app.discordbot.setupButtonActions();
-            Database.db.discord.update({ guildId: interaction.guild.id }, { $set: { roleMessage: message.id } });
-            interaction.reply({ content: 'The role message has been created!', ephemeral: true }).then(msg => {
-                setTimeout(() => msg.delete(), 5000);
+            Database.db.discord.update({ guildId: interaction.guild.id }, { $set: { roleMessage: message.id } }, (err, num) => {
+                if (err) throw err;
+                app.discordbot.setupButtonActions();
+                interaction.reply({ content: 'The role message has been created!', ephemeral: true }).then(msg => {
+                    setTimeout(() => msg.delete(), 5000);
+                });
             });
         });
     }
