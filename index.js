@@ -40,7 +40,7 @@ export class EpicGames {
                 .then(res => res.json())
                 .then(json => {
                     const games = json.data.Catalog.searchStore.elements;
-                    const freeGames = games.filter(game => game.price.totalPrice.discountPrice == 0 && game.promotions.promotionalOffers.length);
+                    const freeGames = games.filter(game => game.price.totalPrice.discountPrice == 0 && game.promotions?.promotionalOffers.length);
                     resolve(freeGames);
                 })
                 .catch(err => reject(err));
